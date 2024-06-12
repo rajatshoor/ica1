@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/inbound-augury-423523-q8/frontend:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: BACKEND_SERVICE_IP
+          value: "34.132.122.163"  # Replace with your actual backend service DNS name
+      imagePullSecrets:
+      - name: db-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
